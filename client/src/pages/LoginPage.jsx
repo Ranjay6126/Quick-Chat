@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import assets from "../assets/assets";
+import { AuthContext } from "../../context/AuthContext";
 
 const LoginPage = () => {
   const [currState, setCurrState] = useState("Sign up");
@@ -9,43 +10,41 @@ const LoginPage = () => {
   const [bio, setBio] = useState("");
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
+  const { login } = useContext(AuthContext);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (currState === "Sign up" && !isDataSubmitted) {
       setIsDataSubmitted(true);
-    } else {
-      console.log({
-        fullName,
-        email,
-        password,
-        bio,
-      });
-
-      setFullName("");
-      setEmail("");
-      setPassword("");
-      setBio("");
-      setIsDataSubmitted(false);
-
-      alert(`${currState} successful!`);
+      return;
     }
+
+    if (currState === "Sign up") {
+      login("signup", { fullName, email, password, bio });
+    } else {
+      login("login", { email, password });
+    }
+
+    setFullName("");
+    setEmail("");
+    setPassword("");
+    setBio("");
+    setIsDataSubmitted(false);
   };
 
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl p-6">
-      {/* ------------------------- Left Side ----------------- */}
+      {/* Left Side */}
       <img src={assets.logo_big} alt="Logo" className="w-[min(30vw,250px)]" />
 
-      {/* ------------------------- Right Side ----------------- */}
+      {/* Right Side */}
       <form
         onSubmit={handleSubmit}
         className="border-2 bg-white/10 text-white border-gray-500 p-6 flex flex-col gap-6 rounded-lg shadow-lg w-full max-w-sm"
       >
         <h2 className="font-medium text-2xl flex justify-between items-center">
           {currState}
-
-          {/* Show toggle arrow only when bio is being filled */}
           {isDataSubmitted && (
             <img
               src={assets.arrow_icon}
@@ -56,7 +55,7 @@ const LoginPage = () => {
           )}
         </h2>
 
-        {/* Full name input - visible only during Sign up step 1 */}
+        {/* Full name input */}
         {currState === "Sign up" && !isDataSubmitted && (
           <input
             onChange={(e) => setFullName(e.target.value)}
@@ -91,7 +90,7 @@ const LoginPage = () => {
           </>
         )}
 
-        {/* Bio textarea - visible only after first step of Sign up */}
+        {/* Bio input */}
         {currState === "Sign up" && isDataSubmitted && (
           <textarea
             onChange={(e) => setBio(e.target.value)}
@@ -103,6 +102,7 @@ const LoginPage = () => {
           ></textarea>
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
           className="py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer hover:opacity-90 transition-all"
@@ -114,11 +114,13 @@ const LoginPage = () => {
             : "Login Now"}
         </button>
 
+        {/* Terms checkbox */}
         <div className="flex items-center gap-2 text-sm text-gray">
           <input type="checkbox" required />
           <p>Agree to the terms of use & privacy policy.</p>
         </div>
 
+        {/* Toggle Sign up / Login */}
         <div className="flex flex-col gap-2">
           {currState === "Sign up" ? (
             <p className="text-sm text-gray-400">
