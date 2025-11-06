@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import assets, { userDummyData } from "../assets/assets";
+import { AuthContext } from "../../context/AuthContext";
 
 const SideBar = ({ selectedUser, setSelectedUser }) => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { logout } = useContext(AuthContext);
 
   return (
     <div
@@ -16,7 +19,6 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
         <div className="flex justify-between items-center">
           <img src={assets.logo} alt="logo" className="max-w-40" />
 
-          {/* Menu dropdown (click toggle) */}
           <div className="relative">
             <img
               src={assets.menu_icon}
@@ -41,8 +43,11 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
                 </p>
                 <hr className="my-2 border-t border-gray-400" />
                 <p
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
                   className="cursor-pointer text-sm hover:text-violet-400"
-                  onClick={() => setMenuOpen(false)}
                 >
                   Logout
                 </p>
@@ -51,7 +56,6 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
           </div>
         </div>
 
-        {/* Search bar */}
         <div className="bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5">
           <img src={assets.search_icon} alt="Search" className="w-3" />
           <input
@@ -62,7 +66,6 @@ const SideBar = ({ selectedUser, setSelectedUser }) => {
         </div>
       </div>
 
-      {/* User list */}
       <div className="flex flex-col">
         {userDummyData.map((user, index) => (
           <div
