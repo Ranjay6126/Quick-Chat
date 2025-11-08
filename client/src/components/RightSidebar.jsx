@@ -1,6 +1,19 @@
-import assets, { imagesDummyData } from "../assets/assets";
+import { useContext, useEffect, useState } from "react";
+import assets from "../assets/assets";
+import { ChatContext } from "../../context/ChatContext";
+import { AuthContext } from "../../context/AuthContext";
 
-const RightSidebar = ({ selectedUser }) => {
+const RightSidebar = () => {
+  const { selectedUser, messages } = useContext(ChatContext);
+  const { logout, onlineUsers } = useContext(AuthContext);
+
+  const [msgImages, setMsgImages] = useState([]);
+
+  // ✅ Use useEffect, not useState for side effects
+  useEffect(() => {
+    setMsgImages(messages.filter((msg) => msg.image).map((msg) => msg.image));
+  }, [messages]);
+
   return (
     selectedUser && (
       <div
@@ -19,9 +32,11 @@ const RightSidebar = ({ selectedUser }) => {
             <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
             {selectedUser.fullName}
           </h1>
-          <p className="text-gray-300 text-center max-w-[80%]">
-            {selectedUser.bio || "No bio available"}
-          </p>
+          {onlineUsers.includes(selectedUser._id) && (
+            <p className="text-gray-300 text-center max-w-[80%]">
+              {selectedUser.bio || "No bio available"}
+            </p>
+          )}
         </div>
 
         <hr className="border-[#ffffff50] my-4" />
@@ -30,7 +45,7 @@ const RightSidebar = ({ selectedUser }) => {
         <div className="px-5 text-xs">
           <p className="text-gray-400 mb-2 font-medium">Media</p>
           <div className="max-h-[200px] overflow-y-auto grid grid-cols-2 gap-3 opacity-90">
-            {imagesDummyData.map((url, index) => (
+            {msgImages.map((url, index) => (
               <div
                 key={index}
                 onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
@@ -48,6 +63,7 @@ const RightSidebar = ({ selectedUser }) => {
 
         {/* Logout Button */}
         <button
+          onClick={() => logout()}
           className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600
           text-white border-none text-sm font-medium py-2 px-20 rounded-full cursor-pointer hover:scale-105 
           transition-transform duration-200 shadow-md"
