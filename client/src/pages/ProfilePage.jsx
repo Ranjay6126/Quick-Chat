@@ -29,7 +29,6 @@ const ProfilePage = () => {
     };
 
     console.log({ name, bio, selectedImg });
-    alert("Profile saved successfully!");
   };
 
   return (
