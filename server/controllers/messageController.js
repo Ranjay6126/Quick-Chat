@@ -1,8 +1,8 @@
 import Message from "../models/Message.js"; 
 import User from "../models/User.js";
-import {io, userSocketMap} from "../server.js";
+import { io, userSocketMap } from "../server.js";
 
-import cloudinay from "../lib/cloudinay.js";
+import cloudinary from "../lib/cloudinay.js";
 //Get all users except the logged in user
 
 export const getUserForSidebar = async (req, res)=>{
@@ -24,7 +24,7 @@ export const getUserForSidebar = async (req, res)=>{
         })
          
         await Promise.all(promise);
-        res.json({success:true, user:filteredUsers, unseenMessages})
+        res.json({success:true, users: filteredUsers, unseenMessages})
 
     }catch(error){
 
@@ -67,6 +67,7 @@ export const getUserForSidebar = async (req, res)=>{
     try{
         const {id} = req.params;
         await Message.findByIdAndUpdate(id, {seen:true})
+        
         res.json({success: true})
 
 
@@ -97,7 +98,7 @@ export const getUserForSidebar = async (req, res)=>{
 
         }
 
-        const newMessage = Message.create({
+        const newMessage = await Message.create({
             senderId,
             receiverId,
             text, 
@@ -107,8 +108,8 @@ export const getUserForSidebar = async (req, res)=>{
         //Emit the new message to the receiver's socket
 
         const receiverSocketId = userSocketMap[receiverId];
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit("newMessage", newMessage)
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage);
         }
 
         res.json({success: true, newMessage});

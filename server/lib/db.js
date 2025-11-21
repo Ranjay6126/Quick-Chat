@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 
-// function to connect to the mongobd database
+export const connectDB = async () => {
+  try {
+    mongoose.connection.on("connected", () => console.log("Database Connected"));
 
-export const connectDB = async ()=>{
-    try{
-
-        mongoose.connection.on('connected',()=>console.log('Database Connected'));
-
-        await mongoose.connect(`${process.env.MONGODB_URI}/
-            chat-app`)
-    } catch (error){
-        console.log(error);
-
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+      throw new Error("MONGO_URI is not set in environment variables");
     }
-}
+
+    await mongoose.connect(uri);
+  } catch (error) {
+    console.log(error);
+  }
+};
