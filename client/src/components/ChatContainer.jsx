@@ -11,22 +11,22 @@ const ChatContainer = () => {
   const { authUser, onlineUsers } = useContext(AuthContext);
 
   const scrollEnd = useRef();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
+
   const navigate = useNavigate();
 
-  
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (input.trim() === "") return;
+    if (input.trim() === "") return null;
     await sendMessage({ text: input.trim() });
     setInput("");
   };
 
-
-  const handleSendImage = async (e) => {
+  //  Fixed: enclosed FileReader logic inside the function
+  const handleSendImage = (e) => {
     const file = e.target.files[0];
     if (!file || !file.type.startsWith("image/")) {
-      toast.error("Please select a valid image file");
+      toast.error("Select an image file");
       return;
     }
 
@@ -69,8 +69,9 @@ const ChatContainer = () => {
           tabIndex={0}
         >
           {selectedUser.fullName}
-          {onlineUsers.includes(selectedUser._id) && <span className="w-2 h-2
-           rounded-full bg-green-500" /> }
+          {onlineUsers.includes(selectedUser._id) &&
+            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+          }
         </p>
 
         <img
@@ -88,7 +89,7 @@ const ChatContainer = () => {
           <div
             key={index}
             className={`flex items-end gap-2 ${
-              msg.senderId === authUser._id ? "justify-end" : "justify-start"
+              msg.senderId !== authUser._id && "flex-row-reverse"
             }`}
           >
             {msg.image ? (
@@ -146,6 +147,7 @@ const ChatContainer = () => {
             accept="image/png, image/jpeg"
             hidden
           />
+
           <label htmlFor="image" className="cursor-pointer">
             <img
               src={assets.gallery_icon}
@@ -167,9 +169,7 @@ const ChatContainer = () => {
   ) : (
     <div className="flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden">
       <img src={assets.logo_icon} className="max-w-16" alt="" />
-      <p className="text-lg font-medium text-white">
-        Chat anytime, Anywhere
-      </p>
+      <p className="text-lg font-medium text-white">Chat anytime, Anywhere</p>
     </div>
   );
 };

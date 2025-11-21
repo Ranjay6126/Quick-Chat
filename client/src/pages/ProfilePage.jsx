@@ -5,10 +5,11 @@ import { AuthContext } from "../../context/AuthContext";
 
 const ProfilePage = () => {
   const { authUser, updateProfile } = useContext(AuthContext);
+
   const [selectedImg, setSelectedImg] = useState(null);
   const navigate = useNavigate();
-  const [name, setName] = useState(authUser?.fullName || "");
-  const [bio, setBio] = useState(authUser?.bio || "");
+  const [name, setName] = useState(authUser.fullName);
+  const [bio, setBio] = useState(authUser.bio);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,8 +85,8 @@ const ProfilePage = () => {
         </form>
 
         <img
-  className="max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10"
-  src={authUser?.profilePic ? authUser.profilePic : assets.logo_icon}
+  className={`max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 $
+  {selectedImg && 'rounded-full'}`} src={authUser?.profilePic || assets.logo_icon}
   alt="Logo"
 />
 

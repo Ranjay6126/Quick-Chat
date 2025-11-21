@@ -12,26 +12,23 @@ const LoginPage = () => {
 
   const { login } = useContext(AuthContext);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
 
     if (currState === "Sign up" && !isDataSubmitted) {
       setIsDataSubmitted(true);
       return;
     }
 
-    if (currState === "Sign up") {
-      login("signup", { fullName, email, password, bio });
-    } else {
-      login("login", { email, password });
-    }
-
-    setFullName("");
-    setEmail("");
-    setPassword("");
-    setBio("");
-    setIsDataSubmitted(false);
-  };
+    
+      login(currState === "Sign up" ? 'signup' : 'login', { fullName, email, password, bio })
+  }
+    // setFullName("");
+    // setEmail("");
+    // setPassword("");
+    // setBio("");
+    // setIsDataSubmitted(false);
+  
 
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl p-6">
@@ -40,7 +37,7 @@ const LoginPage = () => {
 
       {/* Right Side */}
       <form
-        onSubmit={handleSubmit}
+        onSubmit={onSubmitHandler}
         className="border-2 bg-white/10 text-white border-gray-500 p-6 flex flex-col gap-6 rounded-lg shadow-lg w-full max-w-sm"
       >
         <h2 className="font-medium text-2xl flex justify-between items-center">

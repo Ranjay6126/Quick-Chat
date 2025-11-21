@@ -4,27 +4,30 @@ import assets from "../assets/assets";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 
+//1.24
+
 const SideBar = () => {
-  const { getUsers, users, selectedUser, unseenMessages, setSelectedUser, setUnseenMessages } =
+  const { getUsers, users, selectedUser, setUnseenMessages, unseenMessages, setSelectedUser } =
     useContext(ChatContext);
 
-  const [input, setInput] = useState("");
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-
   const { logout, onlineUsers } = useContext(AuthContext);
+
+  const [input, setInput] = useState("");
+  // const navigate = useNavigate();
+  // const [menuOpen, setMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  
+
+  // Filter users by search input
+  const filteredUsers = input ? users.filter((user) =>
+        user.fullName.toLowerCase().includes(input.toLowerCase())): users;
 
   // Fetch users whenever online users change
   useEffect(() => {
     getUsers();
   }, [onlineUsers]);
-
-  // Filter users by search input
-  const filteredUsers = input
-    ? users.filter((user) =>
-        user.fullName.toLowerCase().includes(input.toLowerCase())
-      )
-    : users;
 
   return (
     <div
@@ -33,19 +36,20 @@ const SideBar = () => {
       }`}
     >
       {/* Header Section */}
+
       <div className="pb-5">
         <div className="flex justify-between items-center">
           <img src={assets.logo} alt="logo" className="max-w-40" />
 
-          <div className="relative">
+          <div className="relative py-2 group">
             <img
               src={assets.menu_icon}
               alt="menu"
               className="max-h-5 cursor-pointer"
-              onClick={() => setMenuOpen(!menuOpen)}
+              // onClick={() => setMenuOpen(!menuOpen)}
             />
 
-            {menuOpen && (
+            {/* {menuOpen && ( */}
               <div
                 className="absolute top-full right-0 z-10 w-32 p-3 mt-2 rounded-md
                 bg-[#282142] border border-gray-600 text-gray-100"
@@ -53,7 +57,7 @@ const SideBar = () => {
                 <p
                   onClick={() => {
                     navigate("/profile");
-                    setMenuOpen(false);
+                    // setMenuOpen(false);
                   }}
                   className="cursor-pointer text-sm hover:text-violet-400"
                 >
@@ -61,17 +65,16 @@ const SideBar = () => {
                 </p>
                 <hr className="my-2 border-t border-gray-400" />
                 <p
-                  onClick={() => {
-                    logout();
-                    setMenuOpen(false);
+                  onClick={() => { logout()
+                    // setMenuOpen(false);
                   }}
                   className="cursor-pointer text-sm hover:text-violet-400"
                 >
                   Logout
                 </p>
               </div>
-            )}
-          </div>
+            {/* )} */}
+          </div>  
         </div>
 
         {/* Search Box */}
@@ -109,19 +112,21 @@ const SideBar = () => {
             />
             <div className="flex flex-col leading-5">
               <p>{user.fullName}</p>
-              {onlineUsers.includes(user._id) ? (
-                <span className="text-green-400 text-xs">Online</span>
-              ) : (
-                <span className="text-neutral-400 text-xs">Offline</span>
-              )}
+              
+              {onlineUsers.includes(user._id) 
+
+               ? <span className="text-green-400 text-xs">Online</span>
+              
+               : <span className="text-neutral-400 text-xs">Offline</span>
+
+              }
             </div>
 
             {unseenMessages[user._id] > 0 && (
               <p
                 className="absolute top-4 right-4 text-xs h-5 w-5 flex justify-center
                items-center rounded-full bg-violet-500/50"
-              >
-                {unseenMessages[user._id]}
+              > {unseenMessages[user._id]}
               </p>
             )}
           </div>

@@ -9,9 +9,11 @@ const RightSidebar = () => {
 
   const [msgImages, setMsgImages] = useState([]);
 
-  // ✅ Use useEffect, not useState for side effects
+  // get all the image   and set them to state
+
   useEffect(() => {
-    setMsgImages(messages.filter((msg) => msg.image).map((msg) => msg.image));
+    setMsgImages(
+      messages.filter(msg => msg.image).map(msg => msg.image));
   }, [messages]);
 
   return (
@@ -23,20 +25,19 @@ const RightSidebar = () => {
       >
         {/* Profile Section */}
         <div className="pt-16 flex flex-col items-center gap-3 text-sm font-light mx-auto px-6">
+
           <img
             src={selectedUser?.profilePic || assets.avatar_icon}
-            alt="Profile"
-            className="w-20 h-15 rounded-full object-cover shadow-md"
+            alt=""
+            className="w-20 aspect-[1/1] rounded-full"
           />
-          <h1 className="text-lg font-semibold flex items-center gap-2">
-            <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
+
+          <h1 className="px-10 text-xl font-medium mx-auto flex item-center gap-2">
+          
+             {onlineUsers.includes(selectedUser._id) && <p className="w-3 h-3 rounded-full bg-green-500"></p> }
             {selectedUser.fullName}
           </h1>
-          {onlineUsers.includes(selectedUser._id) && (
-            <p className="text-gray-300 text-center max-w-[80%]">
-              {selectedUser.bio || "No bio available"}
-            </p>
-          )}
+          <p className="px-10 mx-auto">{selectedUser.bio}</p>
         </div>
 
         <hr className="border-[#ffffff50] my-4" />
@@ -48,14 +49,13 @@ const RightSidebar = () => {
             {msgImages.map((url, index) => (
               <div
                 key={index}
-                onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
-                className="cursor-pointer rounded overflow-hidden"
-              >
+                onClick={() => window.open(url)}
+                className="cursor-pointer rounded ">
                 <img
                   src={url}
-                  alt={`media-${index}`}
-                  className="w-full h-28 object-cover rounded-md hover:scale-105 transition-transform duration-200"
-                />
+                  alt=""
+                  className="w-full rounded-md"/>
+                
               </div>
             ))}
           </div>

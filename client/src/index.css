@@ -5,6 +5,8 @@
   font-family: "Outfit", sans-serif;
 }
 
+/* to Hide vertical scrollbar for Chrome */
+
 ::-webkit-scrollbar{
   display: none;
 }
