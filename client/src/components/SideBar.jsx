@@ -13,11 +13,9 @@ const SideBar = () => {
   const { logout, onlineUsers } = useContext(AuthContext);
 
   const [input, setInput] = useState("");
-  // const navigate = useNavigate();
-  // const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
-
   
 
   // Filter users by search input
@@ -46,10 +44,10 @@ const SideBar = () => {
               src={assets.menu_icon}
               alt="menu"
               className="max-h-5 cursor-pointer"
-              // onClick={() => setMenuOpen(!menuOpen)}
+              onClick={() => setMenuOpen(!menuOpen)}
             />
 
-            {/* {menuOpen && ( */}
+            {menuOpen && (
               <div
                 className="absolute top-full right-0 z-10 w-32 p-3 mt-2 rounded-md
                 bg-[#282142] border border-gray-600 text-gray-100"
@@ -57,7 +55,7 @@ const SideBar = () => {
                 <p
                   onClick={() => {
                     navigate("/profile");
-                    // setMenuOpen(false);
+                    setMenuOpen(false);
                   }}
                   className="cursor-pointer text-sm hover:text-violet-400"
                 >
@@ -66,14 +64,14 @@ const SideBar = () => {
                 <hr className="my-2 border-t border-gray-400" />
                 <p
                   onClick={() => { logout()
-                    // setMenuOpen(false);
+                    setMenuOpen(false);
                   }}
                   className="cursor-pointer text-sm hover:text-violet-400"
                 >
                   Logout
                 </p>
               </div>
-            {/* )} */}
+            )}
           </div>  
         </div>
 
@@ -137,3 +135,4 @@ const SideBar = () => {
 };
 
 export default SideBar;
+
