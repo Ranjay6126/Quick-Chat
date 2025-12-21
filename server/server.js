@@ -19,24 +19,36 @@ export const io = new Server(server, {
 export const userSocketMap = {};
 
 io.on("connection", (socket) => {
-  const userId = socket.handshake.query.userId;
-  console.log("User Connected", userId);
+  const userId = socket.handshake.query && socket.handshake.query.userId;
+  console.log(`User Connected: ${userId}`);
 
   if (userId) userSocketMap[userId] = socket.id;
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  socket.on("disconnect", () => {
-    console.log("User Disconnected", userId);
-    delete userSocketMap[userId];
+  socket.on("disconnect", (reason) => {
+    console.log(`User Disconnected: ${userId} (${reason})`);
+    // Only remove mapping if the disconnecting socket matches the stored socket id
+    if (userId && userSocketMap[userId] === socket.id) {
+      delete userSocketMap[userId];
+    }
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 
-// ✅ Fix large payload error
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+// Allow larger payloads for base64 image uploads (adjust as needed)
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors());
+
+// Error handler for oversized payloads
+app.use((err, req, res, next) => {
+  if (err && (err.type === "entity.too.large" || err.status === 413)) {
+    console.error("PayloadTooLargeError:", err.message || err);
+    return res.status(413).json({ success: false, message: "Payload too large" });
+  }
+  next(err);
+});
 
 app.get("/api/status", (req, res) => res.send("Server is Live"));
 app.use("/api/auth", userRouter);

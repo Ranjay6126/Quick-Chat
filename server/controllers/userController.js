@@ -1,7 +1,7 @@
 // Signup and Login Controllers
 
 // Import required modules
-import cloudinay from "../lib/cloudinay.js"; // Import Cloudinary for image upload handling
+import cloudinary from "../lib/cloudinary.js"; // Import Cloudinary for image upload handling
 import { generateToken } from "../lib/utils.js"; // Import function to generate JWT token for authentication
 import User from "../models/User.js"; // Import the User model to interact with MongoDB users collection
 import bcrypt from "bcryptjs"; // Import bcrypt to hash and compare passwords securely
@@ -110,7 +110,7 @@ export const updateProfile = async (req, res) => {
       );
     } else {
       // Upload new profile picture to Cloudinary
-      const upload = await cloudinay.uploader.upload(profilePic);
+      const upload = await cloudinary.uploader.upload(profilePic);
 
       // Update profile with new image URL
       updatedUser = await User.findByIdAndUpdate(
