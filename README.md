@@ -31,9 +31,7 @@ Clean state management using Auth and Chat Contexts
 Tech Stack
 Frontend
 
-React 19
-
-Vite
+React+Vite
 
 TailwindCSS 4
 
