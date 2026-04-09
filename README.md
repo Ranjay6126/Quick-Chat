@@ -194,4 +194,4 @@ Secure session handling with JWT
 
 Optimized media storage using Cloudinary
 
-Clean separation between authentication and chat logic
+Clean separation between authentication and chat logic.
