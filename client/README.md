@@ -1,16 +1,81 @@
-# React + Vite
+# Quick-Chat Client (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for the Quick Chat application. Built with Vite, React 19, Tailwind CSS 4, and Socket.IO Client.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **Rolldown-Vite** (dev server & build)
+- **Tailwind CSS 4** via `@tailwindcss/vite`
+- **React Router 7** for navigation
+- **Axios** for REST API calls
+- **Socket.IO Client** for real-time messaging & WebRTC signaling
+- **react-hot-toast** for notifications
 
-## React Compiler
+## Scripts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run dev      # Start Vite dev server (http://localhost:5173)
+npm run build    # Production build into dist/
+npm run preview  # Preview the production build locally
+npm run lint     # Run ESLint with React & Hooks rules
+```
 
-## Expanding the ESLint configuration
+## Environment
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Create `.env` in this folder:
+
+```env
+VITE_BACKEND_URL=http://localhost:5000
+```
+
+All API calls and Socket.IO connections use this base URL. Make sure the server is running before starting the client.
+
+## Project Layout
+
+```
+client/
+├── context/
+│   ├── AuthContext.jsx     # Auth state, axios interceptor, socket lifecycle
+│   └── ChatContext.jsx     # Users, selected user, messages, call state
+├── src/
+│   ├── components/
+│   │   ├── SideBar.jsx         # User list / conversations
+│   │   ├── ChatContainer.jsx   # Message thread, typing, call UI
+│   │   └── RightSidebar.jsx    # Contact info, media gallery, call history
+│   ├── pages/
+│   │   ├── LoginPage.jsx       # Signup + login forms
+│   │   ├── HomePage.jsx        # Chat layout (sidebar + chat + right panel)
+│   │   └── ProfilePage.jsx     # Profile editor
+│   ├── lib/utils.js
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css          # Tailwind directives + theme
+├── vite.config.js
+├── eslint.config.js
+└── package.json
+```
+
+## Key Contexts
+
+### AuthContext
+- Stores the logged-in user and JWT token.
+- Configures an axios instance that auto-attaches the token.
+- Manages the global Socket.IO connection (connects on login, disconnects on logout).
+
+### ChatContext
+- Holds the list of contacts (with unread counts).
+- Tracks the currently selected conversation.
+- Manages the messages array for the active thread.
+- Holds WebRTC / incoming-call UI state.
+
+## Build Notes
+
+- Tailwind 4 is used via the Vite plugin (no config file needed beyond the import in `index.css`).
+- Rolldown-Vite is pinned as the Vite implementation via `package.json` `overrides`.
+- Production assets are emitted to `dist/`; deploy that folder to any static host.
+
+## Authentication Flow
+
+1. User signs up or logs in via `/api/auth/signup` or `/api/auth/login`.
+2. The server returns a JWT; the client stores it (via AuthContext) and attaches it as a `token` header on every subsequent axios call.
+3. Socket.IO handshake also includes the user id so the server can map socket → user for online presence and signaling.
