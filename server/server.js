@@ -6,6 +6,8 @@ import { Server } from "socket.io";
 import { connectDB } from "./lib/db.js";
 import userRouter from "./routes/userRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
+import callRouter from "./routes/callRoutes.js";
+import Call from "./models/Call.js";
 
 dotenv.config();
 
@@ -25,6 +27,37 @@ io.on("connection", (socket) => {
   if (userId) userSocketMap[userId] = socket.id;
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  // WebRTC signaling is relayed through Socket.IO; media travels directly between callers.
+  socket.on("call:offer", async ({ to, offer }, acknowledge) => {
+    const targetSocketId = userSocketMap[to];
+    if (!targetSocketId) return acknowledge?.({ success: false });
+    const call = await Call.create({ callerId: userId, receiverId: to });
+    io.to(targetSocketId).emit("call:incoming", { from: userId, offer, callId: call._id.toString() });
+    acknowledge?.({ success: true, callId: call._id.toString() });
+  });
+
+  socket.on("call:answer", async ({ to, answer, callId }) => {
+    const targetSocketId = userSocketMap[to];
+    if (callId) await Call.findByIdAndUpdate(callId, { status: "completed" });
+    if (targetSocketId) io.to(targetSocketId).emit("call:answer", { from: userId, answer });
+  });
+
+  socket.on("call:ice-candidate", ({ to, candidate }) => {
+    const targetSocketId = userSocketMap[to];
+    if (targetSocketId) io.to(targetSocketId).emit("call:ice-candidate", { from: userId, candidate });
+  });
+
+  socket.on("call:end", async ({ to, callId, status = "completed" }) => {
+    const targetSocketId = userSocketMap[to];
+    if (callId) await Call.findByIdAndUpdate(callId, { status, endedAt: new Date() });
+    if (targetSocketId) io.to(targetSocketId).emit("call:end", { from: userId });
+  });
+
+  socket.on("typing", ({ to, isTyping }) => {
+    const targetSocketId = userSocketMap[to];
+    if (targetSocketId) io.to(targetSocketId).emit("typing", { from: userId, isTyping: Boolean(isTyping) });
+  });
 
   socket.on("disconnect", (reason) => {
     console.log(`User Disconnected: ${userId} (${reason})`);
@@ -53,6 +86,7 @@ app.use((err, req, res, next) => {
 app.get("/api/status", (req, res) => res.send("Server is Live"));
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
+app.use("/api/calls", callRouter);
 
 await connectDB();
 
