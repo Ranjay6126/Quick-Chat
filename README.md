@@ -1,197 +1,107 @@
-Quick-Chat
+# Quick Chat and Audio Call Web-Application. 
 
-Quick-Chat is a real-time messaging application built with the MERN stack and Socket.io. It enables instant, bidirectional communication between users with secure authentication, live online presence tracking, media sharing, and a responsive interface.
+QuickChat is a full-stack real-time messaging application for private text, image, and audio conversations. It pairs a responsive React interface with an Express, MongoDB, and Socket.IO backend.
 
-The project is structured into two separate packages:
+## Current features
 
-client – React + Vite frontend
+- Secure signup, login, JWT session validation, and profile editing
+- One-to-one real-time text messaging with image uploads through Cloudinary
+- Online presence, unread-message badges, read receipts, and live typing indicators
+- Recent conversations ordered before older conversations
+- Responsive desktop and mobile chat layouts
+- WebRTC audio calls with incoming-call prompts and browser notifications (when permitted)
+- Persistent call history, conversation media gallery, and contact details
+- Modern glass-style chat, authentication, and profile interfaces
 
-server – Express + MongoDB + Socket.io backend
+## Tech stack
 
-Features
+- **Client:** React 19, Vite, Tailwind CSS 4, React Router, Axios, Socket.IO Client
+- **Server:** Node.js, Express, Socket.IO, MongoDB/Mongoose, JWT, bcryptjs
+- **Media:** Cloudinary
+- **Voice calls:** WebRTC with a public STUN server for peer discovery
 
-Real-time messaging using Socket.io (WebSockets)
+## Project structure
 
-Secure JWT authentication (Signup, Login, Token validation)
+```text
+Quick-Chat/
+├── client/                 # React + Vite application
+│   ├── context/            # Authentication and chat state
+│   └── src/components/     # Sidebar, chat, and profile panels
+├── server/                 # Express, Socket.IO, and MongoDB API
+│   ├── controllers/
+│   ├── models/             # User, Message, and Call models
+│   └── routes/
+└── README.md
+```
 
-Protected API routes with middleware
+## Getting started
 
-Online/offline user presence tracking
+### 1. Prerequisites
 
-Unseen message counts and read receipts
+- Node.js 18 or later
+- MongoDB (local instance or Atlas)
+- A Cloudinary account for profile and chat images
 
-Live typing indicators and instant message updates
+### 2. Configure environment variables
 
-Image uploads via Cloudinary (profile & chat images)
+Create `server/.env`:
 
-Responsive UI with TailwindCSS
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=replace_with_a_long_random_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
 
-Clean state management using Auth and Chat Contexts
+Create `client/.env`:
 
-Tech Stack
-Frontend
+```env
+VITE_BACKEND_URL=http://localhost:5000
+```
 
-React+Vite
+### 3. Install and run
 
-TailwindCSS 4
+Open two terminals from the project root.
 
-React Router 7
-
-Axios
-
-socket.io-client
-
-Backend
-
-Node.js
-
-Express 5
-
-MongoDB
-
-Mongoose 8
-
-Socket.io 4
-
-JSON Web Tokens (JWT)
-
-bcryptjs
-
-Cloudinary
-
-Tooling
-
-ESLint 9
-
-Nodemon
-
-dotenv
-
-CORS
-
-Architecture
-Client
-
-AuthContext – Handles authentication, token storage, axios setup, and socket lifecycle.
-
-ChatContext – Manages users, selected chats, and messages.
-
-Route guards for private and public pages.
-
-Components include chat viewport, sidebar, and media preview panel.
-
-Server
-
-server.js – Express + HTTP + Socket.io setup
-
-Routes:
-
-/api/auth
-
-/api/messages
-
-Middleware:
-
-protectRoute (JWT verification)
-
-Models:
-
-User
-
-Message
-
-Controllers for authentication, messaging, and profile updates
-
-API Overview
-Auth Routes (/api/auth)
-
-POST /signup – Register user
-
-POST /login – Authenticate user and issue JWT
-
-PUT /update-profile – Update profile details
-
-GET /check – Validate token
-
-Message Routes (/api/messages)
-
-GET /users – Fetch users with unseen message counts
-
-GET /:id – Get chat thread and mark messages as seen
-
-POST /send/:id – Send message (text/image)
-
-PUT /mark/:id – Mark message as seen
-
-Socket Events
-
-Client connects with userId in handshake query
-
-Server maintains userSocketMap
-
-Emits getOnlineUsers on connect and disconnect
-
-Enables instant message broadcasting
-
-Setup & Installation
-Prerequisites
-
-Node.js (LTS)
-
-MongoDB (local or Atlas)
-
-Cloudinary account
-
-Backend Setup
+```bash
 cd server
 npm install
 npm start
+```
 
-Server runs on:
-http://localhost:5000
-
-Frontend Setup
+```bash
 cd client
 npm install
 npm run dev
+```
 
-Client runs on:
-http://localhost:5173
+The client normally runs at `http://localhost:5173`; the API and Socket.IO server run at `http://localhost:5000`.
 
-Environment Variables
-Server .env
-PORT=5000
-MONGO_URI=your-mongodb-uri
-JWT_SECRET=your-jwt-secret
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-Client .env
-VITE_BACKEND_URL=http://localhost:5000
-Project Structure
-Quick-Chat/
-│
-├── client/        # React frontend
-├── server/        # Express backend
-└── README.md
-Development Notes
+## Available scripts
 
-Install dependencies separately inside client/ and server/
+| Location | Command | Description |
+| --- | --- | --- |
+| `client` | `npm run dev` | Start the Vite development server |
+| `client` | `npm run build` | Create a production build |
+| `client` | `npm run lint` | Run ESLint |
+| `server` | `npm start` | Start the API with nodemon |
 
-Do not commit .env files
+## API overview
 
-Keep JWT stored securely on the client
+| Route | Purpose |
+| --- | --- |
+| `/api/auth` | Signup, login, session check, and profile updates |
+| `/api/messages` | Contacts, messages, image sending, and read status |
+| `/api/calls/:userId` | Call history for a conversation |
 
-Avoid duplicate package.json files at the root
+## Real-time events
 
-Highlights
+Socket.IO provides online presence, incoming messages, typing activity, message-read updates, and WebRTC call signaling. Audio media is sent directly between the two browsers; Socket.IO only exchanges the information needed to establish the connection.
 
-Designed for scalability with support for high concurrent connections
+> Audio calls require microphone permission and a secure context in production (HTTPS). For reliable calls across restrictive networks, add a TURN server to the WebRTC ICE configuration.
 
-Zero page reload real-time updates
+## Development status
 
-Secure session handling with JWT
-
-Optimized media storage using Cloudinary
-
-Clean separation between authentication and chat logic.
+The core chat, read receipts, typing status, image sharing, online presence, audio calls, and call history are implemented. Before production deployment, configure restrictive CORS origins, add a TURN service, protect rate-sensitive routes, and keep all environment secrets outside version control.
