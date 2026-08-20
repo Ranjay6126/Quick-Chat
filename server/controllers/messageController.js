@@ -22,9 +22,18 @@ export const getUserForSidebar = async (req, res)=>{
                 unseenMessages[user._id] = messages.length;
              }
         })
-         
+
         await Promise.all(promise);
-        res.json({success:true, users: filteredUsers, unseenMessages})
+        const usersWithRecency = await Promise.all(filteredUsers.map(async (user) => {
+            const lastMessage = await Message.findOne({
+                $or: [
+                    { senderId: userId, receiverId: user._id },
+                    { senderId: user._id, receiverId: userId },
+                ],
+            }).sort({ createdAt: -1 }).select("createdAt");
+            return { ...user.toObject(), lastMessageAt: lastMessage?.createdAt || user.createdAt };
+        }));
+        res.json({success:true, users: usersWithRecency, unseenMessages})
 
     }catch(error){
 
@@ -47,8 +56,12 @@ export const getUserForSidebar = async (req, res)=>{
                 {senderId: selectedUserId, receiverId: myId},
             ]
         })
-        await Message.updateMany({senderId: selectedUserId, receiverId: myId},
-            {seen : true});
+        const unreadMessages = await Message.find({ senderId: selectedUserId, receiverId: myId, seen: false }).select("_id");
+        if (unreadMessages.length) {
+            await Message.updateMany({ senderId: selectedUserId, receiverId: myId, seen: false }, { seen: true });
+            const senderSocketId = userSocketMap[selectedUserId];
+            if (senderSocketId) io.to(senderSocketId).emit("messageSeen", { messageIds: unreadMessages.map((message) => message._id.toString()) });
+        }
 
         res.json({success:true, messages})
 
@@ -62,11 +75,13 @@ export const getUserForSidebar = async (req, res)=>{
 
  //api to mark message as seen using message id
 
- export const markMessageAsSeen = async(req, res)=>{
+export const markMessageAsSeen = async(req, res)=>{
 
     try{
         const {id} = req.params;
-        await Message.findByIdAndUpdate(id, {seen:true})
+        const message = await Message.findByIdAndUpdate(id, {seen:true}, {new: true})
+        const senderSocketId = userSocketMap[message?.senderId?.toString()];
+        if (senderSocketId) io.to(senderSocketId).emit("messageSeen", { messageIds: [id] });
         
         res.json({success: true})
 
@@ -76,6 +91,28 @@ export const getUserForSidebar = async (req, res)=>{
         res.json({success:false, message: error.message})
     }
  }
+
+// Edit a text message sent by the authenticated user
+export const editMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { text } = req.body;
+        const message = await Message.findOne({ _id: id, senderId: req.user._id });
+
+        if (!message) return res.status(404).json({ success: false, message: "Message not found" });
+        if (message.image) return res.status(400).json({ success: false, message: "Images cannot be edited" });
+        if (!text?.trim()) return res.status(400).json({ success: false, message: "Message cannot be empty" });
+
+        message.text = text.trim();
+        await message.save();
+
+        const receiverSocketId = userSocketMap[message.receiverId.toString()];
+        if (receiverSocketId) io.to(receiverSocketId).emit("messageEdited", message);
+        res.json({ success: true, message });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
 
 
  //Send message to selected user
