@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
@@ -10,17 +9,20 @@ const SideBar = () => {
   const { getUsers, users, selectedUser, setUnseenMessages, unseenMessages, setSelectedUser } =
     useContext(ChatContext);
 
-  const { logout, onlineUsers } = useContext(AuthContext);
+  const { authUser, onlineUsers } = useContext(AuthContext);
 
   const [input, setInput] = useState("");
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const navigate = useNavigate();
-  
-
   // Filter users by search input
-  const filteredUsers = input ? users.filter((user) =>
-        user.fullName.toLowerCase().includes(input.toLowerCase())): users;
+  const filteredUsers = (input ? users.filter((user) =>
+        user.fullName.toLowerCase().includes(input.toLowerCase()) ) : users)
+    .slice()
+    .sort((firstUser, secondUser) => {
+      const recencyDifference = new Date(secondUser.lastMessageAt || 0) - new Date(firstUser.lastMessageAt || 0);
+      if (recencyDifference) return recencyDifference;
+      const firstIsOnline = onlineUsers.includes(firstUser._id);
+      const secondIsOnline = onlineUsers.includes(secondUser._id);
+      return Number(secondIsOnline) - Number(firstIsOnline);
+    });
 
   // Fetch users whenever online users change
   useEffect(() => {
@@ -29,50 +31,19 @@ const SideBar = () => {
 
   return (
     <div
-      className={`bg-[#8185B2]/10 h-full p-5 rounded-r-xl overflow-y-scroll text-white ${
+      className={`bg-[#8185B2]/10 h-full p-5 overflow-hidden flex flex-col text-white ${
         selectedUser ? "max-md:hidden" : ""
       }`}
     >
       {/* Header Section */}
 
-      <div className="pb-5">
+      <div className="shrink-0 pb-5">
         <div className="flex justify-between items-center">
           <img src={assets.logo} alt="logo" className="max-w-40" />
+          <p className="max-w-28 truncate text-right text-sm font-medium text-violet-100" title={authUser?.fullName}>
+            {authUser?.fullName}
+          </p>
 
-          <div className="relative py-2 group">
-            <img
-              src={assets.menu_icon}
-              alt="menu"
-              className="max-h-5 cursor-pointer"
-              onClick={() => setMenuOpen(!menuOpen)}
-            />
-
-            {menuOpen && (
-              <div
-                className="absolute top-full right-0 z-10 w-32 p-3 mt-2 rounded-md
-                bg-[#282142] border border-gray-600 text-gray-100"
-              >
-                <p
-                  onClick={() => {
-                    navigate("/profile");
-                    setMenuOpen(false);
-                  }}
-                  className="cursor-pointer text-sm hover:text-violet-400"
-                >
-                  Edit Profile
-                </p>
-                <hr className="my-2 border-t border-gray-400" />
-                <p
-                  onClick={() => { logout()
-                    setMenuOpen(false);
-                  }}
-                  className="cursor-pointer text-sm hover:text-violet-400"
-                >
-                  Logout
-                </p>
-              </div>
-            )}
-          </div>  
         </div>
 
         {/* Search Box */}
@@ -88,10 +59,13 @@ const SideBar = () => {
       </div>
 
       {/* Users List */}
-      <div className="flex flex-col">
-        {filteredUsers.map((user, index) => (
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-1">
+        <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-violet-200/70">
+          {input ? "Search results" : "Messages"}
+        </p>
+        {filteredUsers.map((user) => (
           <div
-            key={index}
+            key={user._id}
             onClick={() => {
               setSelectedUser(user);
               setUnseenMessages((prev) => ({
@@ -99,17 +73,20 @@ const SideBar = () => {
                 [user._id]: 0,
               }));
             }}
-            className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer max-sm:text-sm ${
-              selectedUser?._id === user._id && "bg-[#282142]/50"
+            className={`relative mb-1 flex items-center gap-3 rounded-xl p-3 transition-all duration-200 cursor-pointer max-sm:text-sm hover:bg-white/10 hover:translate-x-0.5 ${
+              selectedUser?._id === user._id && "bg-violet-400/20 shadow-lg shadow-violet-950/20"
             }`}
           >
-            <img
-              src={user?.profilePic || assets.avatar_icon}
-              alt=""
-              className="w-[35px] aspect-[1/1] rounded-full"
-            />
+            <div className="relative shrink-0">
+              <img
+                src={user?.profilePic || assets.avatar_icon}
+                alt={`${user.fullName}'s profile`}
+                className="w-10 aspect-square rounded-full object-cover ring-2 ring-white/10"
+              />
+              {onlineUsers.includes(user._id) && <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-[#454873] bg-emerald-400" />}
+            </div>
             <div className="flex flex-col leading-5">
-              <p>{user.fullName}</p>
+              <p className="font-medium">{user.fullName}</p>
               
               {onlineUsers.includes(user._id) 
 
