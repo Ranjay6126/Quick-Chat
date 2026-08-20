@@ -50,12 +50,30 @@ export const ChatProvider = ({ children }) => {
       const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
       if (data.success) {
         setMessages((prevMessages) => [...prevMessages, data.newMessage]);
+        getUsers();
         
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const editMessage = async (messageId, text) => {
+    try {
+      const { data } = await axios.put(`/api/messages/${messageId}`, { text });
+      if (!data.success) {
+        toast.error(data.message);
+        return false;
+      }
+      setMessages((currentMessages) => currentMessages.map((message) =>
+        message._id === messageId ? data.message : message
+      ));
+      return true;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not edit message");
+      return false;
     }
   };
 
@@ -76,14 +94,31 @@ export const ChatProvider = ({ children }) => {
             ? prevUnseenMessages[newMessage.senderId] + 1
             : 1,
         }));
-      } 
+      }
+      getUsers();
     })
+
+    socket.on("messageSeen", ({ messageIds }) => {
+      setMessages((currentMessages) => currentMessages.map((message) =>
+        messageIds.includes(message._id) ? { ...message, seen: true } : message
+      ));
+    });
+
+    socket.on("messageEdited", (updatedMessage) => {
+      setMessages((currentMessages) => currentMessages.map((message) =>
+        message._id === updatedMessage._id ? updatedMessage : message
+      ));
+    });
   }
 
   // Function to Unsubscribe from new messages
 
   const unsubscribeFromMessages = () => {
-    if (socket) socket.off("newMessage");
+    if (socket) {
+      socket.off("newMessage");
+      socket.off("messageSeen");
+      socket.off("messageEdited");
+    }
   }
 
   useEffect(() => {
@@ -104,6 +139,7 @@ export const ChatProvider = ({ children }) => {
     getUsers,
     getMessages,
     sendMessage,
+    editMessage,
   };
 
   return (
