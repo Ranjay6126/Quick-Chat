@@ -31,17 +31,24 @@ const LoginPage = () => {
   
 
   return (
-    <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl p-6">
+    <main className="relative min-h-screen overflow-hidden bg-[#09081a] px-5 py-10 text-white flex items-center justify-center">
+      <div className="absolute -top-28 -left-24 h-80 w-80 rounded-full bg-violet-600/30 blur-3xl" />
+      <div className="absolute -bottom-32 -right-24 h-96 w-96 rounded-full bg-emerald-500/20 blur-3xl" />
+      <div className="relative z-10 flex w-full max-w-5xl items-center justify-center gap-12 lg:justify-between max-lg:flex-col">
       {/* Left Side */}
-      <img src={assets.logo_big} alt="Logo" className="w-[min(30vw,250px)]" />
+      <div className="flex max-w-sm flex-col items-center text-center lg:items-start lg:text-left">
+        <img src={assets.logo_big} alt="QuickChat" className="w-40 sm:w-52" />
+        <p className="mt-6 whitespace-nowrap text-xl font-semibold leading-tight sm:text-2xl lg:text-3xl">Chat &amp; call, <span className="text-violet-300">anytime, anywhere.</span></p>
+        <p className="mt-3 whitespace-nowrap text-xs leading-6 text-slate-300 sm:text-sm">Stay close to the people who matter with secure messages, shared photos, and audio calls.</p>
+      </div>
 
       {/* Right Side */}
       <form
         onSubmit={onSubmitHandler}
-        className="border-2 bg-white/10 text-white border-gray-500 p-6 flex flex-col gap-6 rounded-lg shadow-lg w-full max-w-sm"
+        className="w-full max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 sm:p-8 flex flex-col gap-5 shadow-2xl shadow-violet-950/40 backdrop-blur-xl"
       >
         <h2 className="font-medium text-2xl flex justify-between items-center">
-          {currState}
+          <span>{currState}</span>
           {isDataSubmitted && (
             <img
               src={assets.arrow_icon}
@@ -58,7 +65,7 @@ const LoginPage = () => {
             onChange={(e) => setFullName(e.target.value)}
             value={fullName}
             type="text"
-            className="p-2 border border-gray-500 rounded-md focus:outline-none"
+            className="rounded-xl border border-white/15 bg-slate-950/30 p-3 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2 focus:ring-violet-400/30"
             placeholder="Full Name"
             required
           />
@@ -73,7 +80,7 @@ const LoginPage = () => {
               type="email"
               placeholder="Email Address"
               required
-              className="p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="rounded-xl border border-white/15 bg-slate-950/30 p-3 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2 focus:ring-violet-400/30"
             />
 
             <input
@@ -82,7 +89,7 @@ const LoginPage = () => {
               type="password"
               placeholder="Password"
               required
-              className="p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="rounded-xl border border-white/15 bg-slate-950/30 p-3 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2 focus:ring-violet-400/30"
             />
           </>
         )}
@@ -93,7 +100,7 @@ const LoginPage = () => {
             onChange={(e) => setBio(e.target.value)}
             value={bio}
             rows={4}
-            className="p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-xl border border-white/15 bg-slate-950/30 p-3 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2 focus:ring-violet-400/30"
             placeholder="Provide a short bio..."
             required
           ></textarea>
@@ -102,7 +109,7 @@ const LoginPage = () => {
         {/* Submit button */}
         <button
           type="submit"
-          className="py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer hover:opacity-90 transition-all"
+          className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-600 py-3 font-semibold text-white shadow-lg shadow-violet-950/50 transition-all hover:-translate-y-0.5 hover:brightness-110"
         >
           {currState === "Sign up"
             ? isDataSubmitted
@@ -112,9 +119,9 @@ const LoginPage = () => {
         </button>
 
         {/* Terms checkbox */}
-        <div className="flex items-center gap-2 text-sm text-gray">
-          <input type="checkbox" required />
-          <p>Agree to the terms of use & privacy policy.</p>
+        <div className="flex items-center gap-2 text-sm text-slate-300">
+          <input type="checkbox" required className="accent-violet-500" />
+          <p>Agree to the terms of use &amp; privacy policy.</p>
         </div>
 
         {/* Toggle Sign up / Login */}
@@ -127,7 +134,7 @@ const LoginPage = () => {
                   setCurrState("Login");
                   setIsDataSubmitted(false);
                 }}
-                className="font-medium text-violet-400 cursor-pointer"
+                className="font-medium text-violet-300 cursor-pointer hover:text-violet-200"
               >
                 Login here
               </span>
@@ -139,7 +146,7 @@ const LoginPage = () => {
                 onClick={() => {
                   setCurrState("Sign up");
                 }}
-                className="font-medium text-violet-400 cursor-pointer"
+                className="font-medium text-violet-300 cursor-pointer hover:text-violet-200"
               >
                 Click here
               </span>
@@ -147,7 +154,8 @@ const LoginPage = () => {
           )}
         </div>
       </form>
-    </div>
+      </div>
+    </main>
   );
 };
 
