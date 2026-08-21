@@ -6,7 +6,7 @@ import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 
-const ChatContainer = () => {
+const ChatContainer = ({ className = "" }) => {
   const { messages, users, selectedUser, setSelectedUser, sendMessage, editMessage, getMessages } = useContext(ChatContext);
   const { authUser, onlineUsers, socket } = useContext(AuthContext);
 
@@ -221,10 +221,12 @@ const ChatContainer = () => {
     };
   }, [socket, users, selectedUser]);
 
-  return selectedUser ? (
-    <div className="h-full overflow-hidden relative bg-slate-950/10 backdrop-blur-lg">
+  return (
+    <div className={`h-full w-full min-h-0 ${className}`}>
+      {selectedUser ? (
+    <div className="h-full w-full min-h-0 flex flex-col overflow-hidden relative bg-slate-950/10 backdrop-blur-lg">
       {/* Header */}
-      <div className="flex items-center gap-3 py-4 px-5 border-b border-white/10 bg-white/[0.03]">
+      <div className="shrink-0 flex items-center gap-3 py-4 px-5 border-b border-white/10 bg-white/[0.03]">
         <img
           src={selectedUser.profilePic || assets.avatar_icon}
           alt=""
@@ -262,7 +264,7 @@ const ChatContainer = () => {
       </div>
 
       {/* Chat Area */}
-      <div className="flex flex-col h-[calc(100%-132px)] overflow-y-scroll px-5 py-5 pb-8">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 pb-8 relative">
         <div className="mb-5 self-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium tracking-wide text-slate-300">
           Conversation history
         </div>
@@ -337,7 +339,7 @@ const ChatContainer = () => {
       </div>
 
       {/* Bottom Input Section */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center gap-3 p-4 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-transparent">
+      <div className="shrink-0 flex items-center gap-3 p-4 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-transparent">
         <div className="flex-1 flex items-center bg-white/10 border border-white/15 px-3 rounded-2xl text-white shadow-xl backdrop-blur-md focus-within:border-violet-300/60">
           <input
             onChange={(e) => handleTyping(e.target.value)}
@@ -399,10 +401,12 @@ const ChatContainer = () => {
       )}
     </div>
   ) : (
-    <div className="flex flex-col items-center justify-center gap-3 text-gray-500 bg-white/[0.06] max-md:hidden">
+    <div className="h-full flex flex-col items-center justify-center gap-3 text-gray-500 bg-white/[0.06]">
       <img src={assets.logo_icon} className="max-w-16" alt="" />
       <p className="text-lg font-medium text-white">Choose a conversation</p>
       <p className="max-w-52 text-center text-sm text-slate-300">Your chat history, messages, and shared photos will appear here.</p>
+    </div>
+  )}
     </div>
   );
 };
