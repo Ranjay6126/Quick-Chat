@@ -230,14 +230,10 @@ const ChatContainer = ({ className = "" }) => {
         <img
           src={selectedUser.profilePic || assets.avatar_icon}
           alt=""
-          className="w-10 rounded-full cursor-pointer ring-2 ring-white/10"
-          onClick={() => navigate("/profile")}
+          className="w-10 rounded-full ring-2 ring-white/10"
         />
         <p
-          className="flex-1 min-w-0 text-lg text-white flex items-center gap-2 cursor-pointer"
-          onClick={() => navigate("/profile")}
-          role="button"
-          tabIndex={0}
+          className="flex-1 min-w-0 text-lg text-white flex items-center gap-2"
         >
           <span className="truncate">{selectedUser.fullName}</span>
           {onlineUsers.includes(selectedUser._id) &&
