@@ -5,7 +5,7 @@ import { ChatContext } from "../../context/ChatContext";
 
 //1.24
 
-const SideBar = () => {
+const SideBar = ({ className = "", onOpenMyProfile }) => {
   const { getUsers, users, selectedUser, setUnseenMessages, unseenMessages, setSelectedUser } =
     useContext(ChatContext);
 
@@ -29,21 +29,37 @@ const SideBar = () => {
     getUsers();
   }, [onlineUsers]);
 
+  const handleMyProfileClick = () => {
+    setSelectedUser(null);
+    if (onOpenMyProfile) onOpenMyProfile();
+  };
+
   return (
     <div
-      className={`bg-[#8185B2]/10 h-full p-5 overflow-hidden flex flex-col text-white ${
-        selectedUser ? "max-md:hidden" : ""
-      }`}
+      className={`bg-white/[0.03] backdrop-blur-2xl h-full min-h-0 pt-7 pb-5 px-6 md:pt-8 overflow-hidden flex flex-col text-white ${className}`}
     >
       {/* Header Section */}
 
       <div className="shrink-0 pb-5">
-        <div className="flex justify-between items-center">
-          <img src={assets.logo} alt="logo" className="max-w-40" />
-          <p className="max-w-28 truncate text-right text-sm font-medium text-violet-100" title={authUser?.fullName}>
-            {authUser?.fullName}
-          </p>
-
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex items-center gap-2">
+            <img src={assets.logo} alt="logo" className="max-w-40" />
+          </div>
+          <button
+            type="button"
+            onClick={handleMyProfileClick}
+            className="flex items-center gap-2 shrink-0"
+            title={authUser?.fullName}
+          >
+            <img
+              src={authUser?.profilePic || assets.avatar_icon}
+              alt={authUser?.fullName}
+              className="w-9 h-9 aspect-square rounded-full object-cover ring-2 ring-white/10 cursor-pointer hover:ring-violet-400/60 transition-all"
+            />
+            <span className="text-sm font-medium text-violet-100 max-w-[80px] truncate">
+              {authUser?.fullName?.split(" ")[0]}
+            </span>
+          </button>
         </div>
 
         {/* Search Box */}
