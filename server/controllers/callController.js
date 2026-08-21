@@ -13,3 +13,15 @@ export const getCallHistory = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+export const getMyCallHistory = async (req, res) => {
+  try {
+    const me = req.user._id;
+    const calls = await Call.find({
+      $or: [{ callerId: me }, { receiverId: me }],
+    }).sort({ startedAt: -1 }).limit(40);
+    res.json({ success: true, calls });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
