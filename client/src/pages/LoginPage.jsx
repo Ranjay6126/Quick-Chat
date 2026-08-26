@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import assets from "../assets/assets";
 import { AuthContext } from "../../context/AuthContext";
+import ConnectionTagline from "../components/ConnectionTagline";
 
 const LoginPage = () => {
   const [currState, setCurrState] = useState("Sign up");
@@ -39,45 +40,8 @@ const LoginPage = () => {
       <div className="flex flex-col items-center text-center flex-1 max-w-xl w-full">
         <img src={assets.logo_big} alt="QuickChat" className="w-36 sm:w-44" />
 
-        {/* Pill bar — centered inline pill, all text fully visible, NO clipping/scrolling */}
-        <div className="relative mt-10 w-full flex justify-center">
-          <div className="relative inline-flex">
-            {/* Pastel gradient outer stroke (light purple → light teal neon edge glow) */}
-            <div className="absolute -inset-[1.5px] rounded-[18px] bg-gradient-to-r from-violet-300/60 via-fuchsia-200/40 to-emerald-300/40 blur-[1px] opacity-80"></div>
-            {/* Glass pill body — even more slightly reduced size */}
-            <div className="relative inline-flex items-center gap-[3px] sm:gap-2 rounded-[18px] bg-white/[0.04] px-1.5 sm:px-4 py-1.5 sm:py-2.5 whitespace-nowrap backdrop-blur-2xl border border-white/[0.06]">
-              {/* Left outermost dash — short thin bar */}
-              <span className="shrink-0 h-[2.5px] sm:h-[2.5px] w-3 sm:w-5 rounded-full bg-gradient-to-r from-violet-300/70 to-violet-200/50"></span>
-
-              {/* Green dot */}
-              <span className="relative shrink-0">
-                <span className="absolute inset-0 rounded-full bg-emerald-400 blur-sm opacity-45 scale-125"></span>
-                <span className="relative block h-2.5 w-2.5 sm:h-4 sm:w-4 rounded-full bg-gradient-to-br from-emerald-300 via-emerald-400 to-teal-500 shadow-[0_0_7px_rgba(52,211,153,0.5)]"></span>
-              </span>
-              {/* Chat & Call label (pink/lavender to mint gradient) — smaller */}
-              <span className="shrink-0 bg-gradient-to-r from-pink-200 via-fuchsia-100 to-emerald-200 bg-clip-text text-transparent font-semibold text-sm sm:text-lg tracking-wide">
-                Chat &amp; Call
-              </span>
-              {/* ANYWHERE pill (purple capsule) — smaller */}
-              <span className="inline-flex items-center shrink-0 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 px-1.5 sm:px-4 py-0.5 sm:py-1 text-[9px] sm:text-sm font-bold uppercase tracking-wider text-white shadow-[0_3px_10px_rgba(99,102,241,0.28)]">
-                ANYWHERE
-              </span>
-              {/* Middle dash — short thin bar */}
-              <span className="shrink-0 h-[2.5px] sm:h-[2.5px] w-3 sm:w-5 rounded-full bg-gradient-to-r from-violet-300/70 to-violet-200/50"></span>
-              {/* ANYTIME pill (pink capsule) — smaller */}
-              <span className="inline-flex items-center shrink-0 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 px-1.5 sm:px-4 py-0.5 sm:py-1 text-[9px] sm:text-sm font-bold uppercase tracking-wider text-white shadow-[0_3px_10px_rgba(244,63,94,0.28)]">
-                ANYTIME
-              </span>
-              {/* Pink dot */}
-              <span className="relative shrink-0">
-                <span className="absolute inset-0 rounded-full bg-fuchsia-400 blur-sm opacity-45 scale-125"></span>
-                <span className="relative block h-2.5 w-2.5 sm:h-4 sm:w-4 rounded-full bg-gradient-to-br from-pink-300 via-fuchsia-400 to-purple-400 shadow-[0_0_7px_rgba(232,121,249,0.5)]"></span>
-              </span>
-
-              {/* Right outermost dash — short thin bar */}
-              <span className="shrink-0 h-[2.5px] sm:h-[2.5px] w-3 sm:w-5 rounded-full bg-gradient-to-r from-violet-300/70 to-violet-200/50"></span>
-            </div>
-          </div>
+        <div className="mt-8 flex justify-center">
+          <ConnectionTagline />
         </div>
 
         {/* Subtitle — large, centered, light */}
